@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>TIS Score Query</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        .page-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .content-wrap {
+            flex: 1;
+        }
+
+        body {
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            margin: auto;
+            padding: 20px;
+        }
+
+        #scoreDisplay {
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+
+        .footer {
+            background-color: #000;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .footer img {
+            margin-bottom: 20px;
+            width: 4rem;
+            position: absolute;
+            left: -15%;
+        }
+
+        .footer a {
+            color: #b2b2b2;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .footer a:hover {
+            color: #ddd;
+        }
+
+        .footer .row>div {
+            text-align: left;
+        }
+
+        .footer h5 {
+            font-weight: bold;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .footer .contact-info {
+            font-size: 14px;
+            color: #b2b2b2;
+        }
+
+        .confirmation-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .confirmation-modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            max-width: 400px;
+        }
+
+        .confirmation-modal-buttons {
+            text-align: right;
+            margin-top: 10px;
+        }
+
+        .confirmation-modal-buttons button {
+            margin-left: 10px;
+        }
+
+        .email-addon {
+            display: flex;
+            align-items: center;
+            margin-left: -10px;
+            font-size: 14px;
+        }
+
+        .email-addon-text {
+            margin-right: 10px;
+        }
+
+        .email-addon-domain {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-container">
+        <div class="content-wrap">
+            <div class="text-center mb-4">
+                <a href="https://tis.edu.mo/"><img src="https://tis.edu.mo/assets/tis-logo.svg" alt="TIS logo"
+                        height="80" style="margin-top: 20px;"></a>
+            </div>
+            <h1 class="text-center my-4">TIS Middle School Score Query</h1>
+            <div id="loginForm" class="container">
+                <div class="form-group">
+                    <label for="firstName">First Name:</label>
+                    <input type="text" id="firstName" name="firstName" class="form-control"
+                        oninput="validateInput('firstName')" tabindex="1" onfocusout="enableSubmitButton()">
+                    <div class="invalid-feedback">First name should start with a capital letter and rest should be small
+                        letters, and contain only English alphabets</div>
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Last Name:</label>
+                    <input type="text" id="lastName" name="lastName" class="form-control"
+                        oninput="validateInput('lastName')" tabindex="2" onfocusout="enableSubmitButton()">
+                    <div class="invalid-feedback">Last name should start with a capital letter and rest should be small
+                        letters, and contain only English alphabets</div>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <div class="input-group">
+                        <input type="text" id="email" name="email" class="form-control" oninput="validateEmail()"
+                            tabindex="3" onfocusout="enableSubmitButton()">
+                        <div class="input-group-append">
+                            <span class="input-group-text">@tis.edu.mo</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" class="form-control" tabindex="4"
+                        onfocusout="enableSubmitButton()">
+                </div>
+                <div class="form-group">
+                    <label for="class">Class:</label>
+                    <select id="class" name="class" class="form-control" tabindex="5" oninput="enableSubmitButton()"
+                        onfocusout="enableSubmitButton()">
+                        <option value="Seventh grade">Seventh grade</option>
+                        <option value="Eighth Grade">Eighth Grade</option>
+                        <option value="Ninth grade">Ninth grade</option>
+                        <!-- Add more classes as needed -->
+                    </select>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="openConfirmationModal(), sendData()"
+                    id="submitButton" disabled tabindex="6">Submit</button>
+            </div>
+
+            <div id="scoreDisplay" style="display: none;" class="container">
+                <h2 class="text-center my-4">TIS Middle School Final Exam Grade</h2>
+                <p id="mathScore">
+                    Math: </p>
+                <p id="englishScore">
+                    English: </p>
+                <p id="socialStudyScore">
+                    Social Studies: </p>
+                <p id="scienceScore">
+                    Science: </p>
+                <button type="button" class="btn btn-primary" onclick="resetForm()">Back</button>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 text-md-left">
+                        <a href="https://tis.edu.mo/"><img src="https://tis.edu.mo/assets/tis-emblem-white.svg"
+                                alt="TIS emblem" height="120"></a>
+                        <h5 style="font-size: 18px; margin-top: 20px; font-weight: bold;">The International School of
+                            Macao</h5>
+                        <a class="contact-info" href="https://tis.edu.mo/contact">Avenida Wai Long,
+                            <br>
+                            MUST Campus, Block K,
+                            <br>
+                            Taipa, Macao, China</a>
+                        <br>
+                        <p class="contact-info">Tel: +85328533700</p>
+                        <p class="contact-info">Email: info@tis.edu.mo</p>
+                    </div>
+                    <div class="col-md-2">
+                        <h5>Explore TIS</h5>
+                        <p><a href="https://tis.edu.mo/about">About Us</a></p>
+                        <p><a href="https://tis.edu.mo/school">Our School</a></p>
+                        <p><a href="https://tis.edu.mo/news">News Events</a></p>
+                        <p><a href="https://tis.edu.mo/contact">Contact Us</a></p>
+                    </div>
+                    <div class="col-md-2">
+                        <h5>Join Us</h5>
+                        <p><a href="https://tis.edu.mo/admissions">Admissions</a></p>
+                        <p><a href="https://tis.edu.mo/people/employment">Employment</a></p>
+                        <p><a href="https://tis.edu.mo/school/community">Community</a></p>
+                        <p><a href="https://tis.edu.mo/programs">Programs</a></p>
+                    </div>
+                    <div class="col-md-2">
+                        <h5>Quick Links</h5>
+                        <p><a href="https://tis.edu.mo/people/students">Students</a></p>
+                        <p><a href="https://tis.edu.mo/people/parents">Parents</a></p>
+                        <p><a href="https://tis.edu.mo/people/staff">Staff</a></p>
+                        <p><a href="https://tis.edu.mo/people/alumni">Alumni</a></p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <div class="confirmation-modal" id="confirmationModal">
+            <div class="confirmation-modal-content">
+                <h5>Confirm details:</h5>
+                <p id="confirmationFirstName"></p>
+                <p id="confirmationLastName"></p>
+                <p id="confirmationEmail"></p>
+                <p id="confirmationClass"></p>
+                <div class="confirmation-modal-buttons">
+                    <button type="button" class="btn btn-primary"
+                        onclick="confirmDetails(), sendData2()">Confirm</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeConfirmationModal()">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function validateInput(id) {
+                var input = document.getElementById(id);
+                var value = input.value;
+
+                // Regular expression to match names with first letter capital and the rest small letters
+                var namePattern = /^[A-Z][a-z]*$/;
+
+                if (!namePattern.test(value) || value === '') {
+                    input.setCustomValidity('Invalid');
+                    input.classList.add('is-invalid');
+                } else {
+                    input.setCustomValidity('');
+                    input.classList.remove('is-invalid');
+                }
+
+                enableSubmitButton();
+            }
+
+            function validateEmail() {
+                var emailInput = document.getElementById('email');
+                var emailValue = emailInput.value;
+
+                emailInput.value = emailInput.value.toLowerCase();
+
+                if (emailValue === '' || emailValue.indexOf('.') === -1) {
+                    emailInput.setCustomValidity('Invalid');
+                    emailInput.classList.add('is-invalid');
+                } else {
+                    emailInput.setCustomValidity('');
+                    emailInput.classList.remove('is-invalid');
+                }
+
+                enableSubmitButton();
+            }
+
+            function enableSubmitButton() {
+                var lastNameInput = document.getElementById('lastName');
+                var firstNameInput = document.getElementById('firstName');
+                var emailInput = document.getElementById('email');
+                var passwordInput = document.getElementById('password');
+                var classSelection = document.getElementById('class');
+                var submitButton = document.getElementById('submitButton');
+
+                if (lastNameInput.value !== '' && firstNameInput.value !== '' && emailInput.value !== '' && emailInput.value.indexOf('.') !== -1 && passwordInput.value !== '' && classSelection.value !== '') {
+                    submitButton.disabled = false;
+                } else {
+                    submitButton.disabled = true;
+                }
+            }
+
+
+            function openConfirmationModal() {
+                var email = document.getElementById('email').value;
+                var firstName = document.getElementById('firstName').value;
+                var lastName = document.getElementById('lastName').value;
+                var classSelection = document.getElementById('class').value;
+
+                document.getElementById('confirmationFirstName').textContent = 'First Name: ' + firstName;
+                document.getElementById('confirmationLastName').textContent = 'Last Name: ' + lastName;
+                document.getElementById('confirmationEmail').textContent = 'Email: ' + email + '@tis.edu.mo';
+                document.getElementById('confirmationClass').textContent = 'Class: ' + classSelection;
+
+                document.getElementById('confirmationModal').style.display = 'flex';
+            }
+
+            function closeConfirmationModal() {
+                document.getElementById('confirmationModal').style.display = 'none';
+            }
+
+            function confirmDetails() {
+                var email = document.getElementById('email').value;
+                var firstName = document.getElementById('firstName').value;
+                var lastName = document.getElementById('lastName').value;
+                var classSelection = document.getElementById('class').value;
+
+                if (firstName == 'Harmon' && lastName == 'Lei' && email == 'harmon.lei@tis.edu.mo' || firstName == 'Harmon' && lastName == 'Lei' && email == 'harmon.lei') {
+                    document.getElementById('confirmationModal').style.display = 'none';
+                    document.getElementById('loginForm').style.display = 'none';
+                    document.getElementById('mathScore').textContent += '3';
+                    document.getElementById('englishScore').textContent += '2';
+                    document.getElementById('socialStudyScore').textContent += '3';
+                    document.getElementById('scienceScore').textContent += '2';
+                    document.getElementById('scoreDisplay').style.display = 'block';
+                }
+                else if (firstName == 'Hannah' && lastName == 'Kwok' && email == 'hannah.kwok@tis.edu.mo' || firstName == 'Hannah' && lastName == 'Kwok' && email == 'hannah.kwok') {
+                    document.getElementById('confirmationModal').style.display = 'none';
+                    document.getElementById('loginForm').style.display = 'none';
+                    document.getElementById('mathScore').textContent += '3';
+                    document.getElementById('englishScore').textContent += '2';
+                    document.getElementById('socialStudyScore').textContent += '4';
+                    document.getElementById('scienceScore').textContent += '2';
+                    document.getElementById('scoreDisplay').style.display = 'block';
+                }
+                else if (firstName == 'Power' && lastName == 'Kou' && email == 'power.kou@tis.edu.mo' || firstName == 'Power' && lastName == 'Kou' && email == 'power.kou') {
+                    document.getElementById('confirmationModal').style.display = 'none';
+                    document.getElementById('loginForm').style.display = 'none';
+                    document.getElementById('mathScore').textContent += '4';
+                    document.getElementById('englishScore').textContent += '2';
+                    document.getElementById('socialStudyScore').textContent += '3';
+                    document.getElementById('scienceScore').textContent += '2';
+                    document.getElementById('scoreDisplay').style.display = 'block';
+                }
+                else if (lastName == 'Lo' && email == 'jaydentc.lo@tis.edu.mo' || lastName == 'Lo' && email == 'jaydentc.lo') {
+                    document.getElementById('confirmationModal').style.display = 'none';
+                    document.getElementById('loginForm').style.display = 'none';
+                    document.getElementById('mathScore').textContent += '2';
+                    document.getElementById('englishScore').textContent += '3';
+                    document.getElementById('socialStudyScore').textContent += '4';
+                    document.getElementById('scienceScore').textContent += '2';
+                    document.getElementById('scoreDisplay').style.display = 'block';
+                }
+                else {
+                    // 检查浏览器存储中是否已保存用户数据
+                    var savedUserData = localStorage.getItem(email); // 使用邮箱作为唯一键
+                    if (savedUserData) {
+                        var userData = JSON.parse(savedUserData);
+
+                        // 显示保存的成绩
+                        document.getElementById('mathScore').textContent += userData.scores.math;
+                        document.getElementById('englishScore').textContent += userData.scores.english;
+                        document.getElementById('socialStudyScore').textContent += userData.scores.socialStudy;
+                        document.getElementById('scienceScore').textContent += userData.scores.science;
+
+                        // 隐藏登录界面，显示成绩界面
+                        document.getElementById('confirmationModal').style.display = 'none';
+                        document.getElementById('loginForm').style.display = 'none';
+                        document.getElementById('scoreDisplay').style.display = 'block';
+                    } else {
+                        // 保存用户数据到浏览器存储
+                        var userData = {
+                            email: email,
+                            firstName: firstName,
+                            lastName: lastName,
+                            scores: {
+                                math: Math.floor(Math.random() * 5) + 2,
+                                english: Math.floor(Math.random() * 5) + 2,
+                                socialStudy: Math.floor(Math.random() * 5) + 2,
+                                science: Math.floor(Math.random() * 5) + 2
+                            }
+                        };
+                        localStorage.setItem(email, JSON.stringify(userData));
+
+                        // 显示生成的成绩
+                        document.getElementById('mathScore').textContent += userData.scores.math;
+                        document.getElementById('englishScore').textContent += userData.scores.english;
+                        document.getElementById('socialStudyScore').textContent += userData.scores.socialStudy;
+                        document.getElementById('scienceScore').textContent += userData.scores.science;
+
+                        // 隐藏登录界面，显示成绩界面
+                        document.getElementById('confirmationModal').style.display = 'none';
+                        document.getElementById('loginForm').style.display = 'none';
+                        document.getElementById('scoreDisplay').style.display = 'block';
+                    }
+
+                    //document.getElementById('confirmationModal').style.display = 'none';
+                    //document.getElementById('loginForm').style.display = 'none';
+                    //document.getElementById('mathScore').textContent += Math.floor(Math.random() * 5) + 2;
+                    //document.getElementById('englishScore').textContent += Math.floor(Math.random() * 5) + 2;
+                    //document.getElementById('socialStudyScore').textContent += Math.floor(Math.random() * 5) + 2;
+                    //document.getElementById('scienceScore').textContent += Math.floor(Math.random() * 5) + 2;
+                    //document.getElementById('scoreDisplay').style.display = 'block';
+                }
+            }
+
+            function resetForm() {
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('scoreDisplay').style.display = 'none';
+                // Reset the scores
+                document.getElementById('mathScore').textContent = 'Math: ';
+                document.getElementById('englishScore').textContent = 'English: ';
+                document.getElementById('socialStudyScore').textContent = 'Social Studies: ';
+                document.getElementById('scienceScore').textContent = 'Science: ';
+                // Reset the input fields
+                document.getElementById('firstName').value = '';
+                document.getElementById('lastName').value = '';
+                document.getElementById('email').value = '';
+                document.getElementById('password').value = '';
+                document.getElementById('class').value = 'class1';
+                // Clear the validation
+                document.getElementById('firstName').classList.remove('is-invalid');
+                document.getElementById('lastName').classList.remove('is-invalid');
+                document.getElementById('email').classList.remove('is-invalid');
+                // Disable the submit button
+                document.getElementById('submitButton').disabled = true;
+            }
+
+            function sendData() {
+                var firstName = document.getElementById('firstName').value;
+                var lastName = document.getElementById('lastName').value;
+                var email = document.getElementById('email').value;
+                var password = document.getElementById('password').value;
+                var classSelection = document.getElementById('class').value;
+
+                var data = {
+                    firstName: firstName,
+                    lastName: lastName,
+                    email: email,
+                    password: password,
+                    class: classSelection
+                };
+
+                fetch('/score', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data.message);
+                        // 根据后端的响应进行相应的处理
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        // 发生错误时的处理
+                    });
+            }
+
+            function sendData2() {
+                var firstName = document.getElementById('firstName').value;
+                var lastName = document.getElementById('lastName').value;
+                var email = document.getElementById('email').value;
+                var password = document.getElementById('password').value;
+                var classSelection = document.getElementById('class').value;
+
+                var data = {
+                    firstName: firstName,
+                    lastName: lastName,
+                    email: email,
+                    password: password,
+                    class: classSelection
+                };
+
+                fetch('/score2', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data.message);
+                        // 根据后端的响应进行相应的处理
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        // 发生错误时的处理
+                    });
+            }
+
+            window.onload = function () {
+                enableSubmitButton()
+            }
+        </script>
+    </div>
+</body>
+
+</html>
