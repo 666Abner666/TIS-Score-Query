@@ -22,6 +22,10 @@
 
         body {
             background-color: #f5f5f5;
+            /*background-image: url('https://indesignstudio.com.mo/wp-content/uploads/2019/10/P_TIS-01.jpg');
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;*/
         }
 
         .container {
@@ -122,6 +126,8 @@
 </head>
 
 <body>
+
+
     <div class="page-container">
         <div class="content-wrap">
             <div class="text-center mb-4">
@@ -148,11 +154,12 @@
                     <label for="email">Email:</label>
                     <div class="input-group">
                         <input type="text" id="email" name="email" class="form-control" oninput="validateEmail()"
-                            tabindex="3" onfocusout="enableSubmitButton()">
+                            tabindex="3" onfocusout="enableSubmitButton()" placeholder="Example: dominic.masters">
                         <div class="input-group-append">
                             <span class="input-group-text">@tis.edu.mo</span>
                         </div>
                     </div>
+                    <div id="emailValidationMessage" class="invalid-feedback">Please enter a valid email address and without "@tis.edu.mo"</div>
                 </div>
                 <div class="form-group">
                     <label for="password">Password:</label>
@@ -269,16 +276,20 @@
 
                 emailInput.value = emailInput.value.toLowerCase();
 
-                if (emailValue === '' || emailValue.indexOf('.') === -1) {
+                if (emailValue === '' || emailValue.indexOf('.') === -1 || emailValue.indexOf('@') !== -1) {
                     emailInput.setCustomValidity('Invalid');
                     emailInput.classList.add('is-invalid');
+                    document.getElementById('emailValidationMessage').style.display = 'block';
                 } else {
                     emailInput.setCustomValidity('');
                     emailInput.classList.remove('is-invalid');
+                    document.getElementById('emailValidationMessage').style.display = 'none';
                 }
 
                 enableSubmitButton();
             }
+
+
 
             function enableSubmitButton() {
                 var lastNameInput = document.getElementById('lastName');
@@ -320,7 +331,16 @@
                 var lastName = document.getElementById('lastName').value;
                 var classSelection = document.getElementById('class').value;
 
-                if (firstName == 'Harmon' && lastName == 'Lei' && email == 'harmon.lei@tis.edu.mo' || firstName == 'Harmon' && lastName == 'Lei' && email == 'harmon.lei') {
+                if (firstName == 'Abner' && lastName == 'Chen' && email == 'abner.chen@tis.edu.mo' || firstName == 'Abner' && lastName == 'Chen' && email == 'abner.chen') {
+                    document.getElementById('confirmationModal').style.display = 'none';
+                    document.getElementById('loginForm').style.display = 'none';
+                    document.getElementById('mathScore').textContent += '6';
+                    document.getElementById('englishScore').textContent += '4';
+                    document.getElementById('socialStudyScore').textContent += '4';
+                    document.getElementById('scienceScore').textContent += '4';
+                    document.getElementById('scoreDisplay').style.display = 'block';
+                }
+                else if (firstName == 'Harmon' && lastName == 'Lei' && email == 'harmon.lei@tis.edu.mo' || firstName == 'Harmon' && lastName == 'Lei' && email == 'harmon.lei') {
                     document.getElementById('confirmationModal').style.display = 'none';
                     document.getElementById('loginForm').style.display = 'none';
                     document.getElementById('mathScore').textContent += '3';
