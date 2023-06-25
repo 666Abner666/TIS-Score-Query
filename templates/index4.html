@@ -44,7 +44,7 @@
             background-color: #000;
             color: #fff;
             text-align: center;
-            padding: 20px;
+            /*padding: 20px;*/
         }
 
         .footer img {
@@ -57,11 +57,16 @@
         .footer a {
             color: #b2b2b2;
             text-decoration: none;
-            font-size: 14px;
+            font-size: 15px;
+        }
+
+        .footer p {
+            line-height: 10px;
         }
 
         .footer a:hover {
-            color: #ddd;
+            color: #ffffff;
+            text-decoration: underline;
         }
 
         .footer .row>div {
@@ -71,12 +76,19 @@
         .footer h5 {
             font-weight: bold;
             font-size: 16px;
-            margin-top: 10px;
+            margin-top: 20px;
+            margin-bottom: 15px;
         }
 
         .footer .contact-info {
             font-size: 14px;
             color: #b2b2b2;
+            line-height: 10px;
+        }
+
+        .footer .contact-info:hover {
+            color: #b2b2b2;
+            text-decoration: none;
         }
 
         .confirmation-modal {
@@ -159,7 +171,8 @@
                             <span class="input-group-text">@tis.edu.mo</span>
                         </div>
                     </div>
-                    <div id="emailValidationMessage" class="invalid-feedback">Please enter a valid school email address and without "@tis.edu.mo"</div>
+                    <div id="emailValidationMessage" class="invalid-feedback">Please enter a valid school email address
+                        and without "@tis.edu.mo"</div>
                 </div>
                 <div class="form-group">
                     <label for="password">Password:</label>
@@ -208,8 +221,14 @@
                             <br>
                             Taipa, Macao, China</a>
                         <br>
-                        <p class="contact-info">Tel: +85328533700</p>
-                        <p class="contact-info">Email: info@tis.edu.mo</p>
+                        <!-- <p class="contact-info" style="margin-top: 25px;">Tel: +85328533700</p>
+                        <p class="contact-info">Email: info@tis.edu.mo</p> -->
+
+                        <p class="contact-info" style="margin-top: 25px;">Tel: <a
+                                style="text-decoration: underline; color: #eee;" href="tel:+853-2853-3700">+853 2853
+                                3700</a></p>
+                        <p class="contact-info">Email: <a style="text-decoration: underline; color: #eee;"
+                                href="mailto:info@tis.edu.mo">info@tis.edu.mo</a></p>
                     </div>
                     <div class="col-md-2">
                         <h5>Explore TIS</h5>
